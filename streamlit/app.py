@@ -29,7 +29,9 @@ with st.spinner("Setting up the database..."):
     # this occurs only for the first time
     evaluate_states([initial_state()])
 
-with st.sidebar:
+#with st.sidebar:
+c1, c2 = st.columns([4, 8])
+with c1:
     state_text = st.text_input("Game state", value="", placeholder="klz.h..H.ZLK0000001")
 
 state = initial_state()
@@ -49,7 +51,7 @@ c1, _, c2 = st.columns([4, 1, 7])
 #img = state.to_image()
 #c1.image(np.asarray(img), width=300)
 #c = c1.container()
-html = "\n".join(state.to_html(cellsize="100"))
+html = "\n".join(state.to_html(cellsize="100", captured_imgsize="40"))
 with c1:
     components.html(html, width=400, height=600)
 #    c.markdown(h, unsafe_allow_html=True)
@@ -61,7 +63,7 @@ with c1:
 
 
 value = evaluate_states([state])[0]
-c2.markdown(f"### State Value = {value}")
+c2.markdown(f"**State Value: {value}**")
 
 actions = state.valid_actions
 next_states = [state.action_result(a) for a in actions]
