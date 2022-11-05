@@ -416,7 +416,7 @@ def _state_image(state: State, padding=10, threshold=0.99, **kwargs):
         img = Image.open(imgfile).convert("RGB")
     # crop white rows and cols
     a = np.asarray(img)
-    white_flag = (a == 255).min(axis=2)  # to do we may better to allow some deviation from white
+    white_flag = (a == 255).min(axis=2)  # todo. we may better to allow some deviation from white
     tmp = np.where(white_flag.mean(axis=0) <= threshold)[0]
     i1 = np.clip(min(tmp) - padding, 0, a.shape[0])
     i2 = np.clip(max(tmp) + padding, 0, a.shape[0])
