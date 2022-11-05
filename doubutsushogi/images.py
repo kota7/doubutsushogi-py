@@ -28,8 +28,8 @@ def load_images(directory, as_base64: bool=False, ext=("png", "jpg", "jpeg", "gi
     for n, f in files.items():
         with open(f, "rb") as g:
             tmp = g.read()
-            print(n)
-            print(tmp)
+            #print(n)
+            #print(tmp)
             if as_base64:
                 tmp = base64.b64encode(tmp).decode("utf8")
             images[n] = tmp

@@ -136,7 +136,7 @@ class State:
         if len(text) == 18:
             text += "1"
         if len(text) != 19:
-            raise ValueError(f"text length must be 19, but '{text}'", file=sys.stderr)
+            raise ValueError(f"text length must be 19, but '{text}'")
         mappings = {
             ".": EMPTY,
             "h": -HIYOKO, "z": -ZOU, "k": -KIRIN, "n": -TORI, "l": -LION,
@@ -149,6 +149,12 @@ class State:
                 raise ValueError(f"Failed to parse '{t}' at position {i}")
         return State(data)
 
+    @property
+    def text(self):
+        out = [LETTERS[v] for v in self._data[:12]] + [str(v) for v in self._data[12:]]
+        return "".join(out)
+
+        
     @property
     def normalized_state_index(self):
         if self.turn != 1:
@@ -359,8 +365,8 @@ def _game_status(state: State)-> int:
 
 def _state_html(state: State, imagename: str=None, imagedir: str=None,
                 bordersize="2px", bordercolor="#424242", bordertype="solid",
-                boardcolor="#d1edf2", imgsize=100,
-                captured_imgsize=40, captured_color="#efefef"):
+                boardcolor="#d1edf2", cellsize="70",
+                captured_imgsize="30", captured_color="#efefef"):
     if imagedir is not None:
         images = load_images(imagedir, as_base64=True)
     else:
@@ -378,14 +384,16 @@ def _state_html(state: State, imagename: str=None, imagedir: str=None,
         return "<img {}>".format(" ".join(f'{k}="{v}"' for k, v in properties.items()))
 
     board = """
-    <table>
+    <table style="table-layout: fixed;">
     <tr><td {tdprop}>{}</td><td {tdprop}>{}</td><td {tdprop}>{}</td></tr>
     <tr><td {tdprop}>{}</td><td {tdprop}>{}</td><td {tdprop}>{}</td></tr>
     <tr><td {tdprop}>{}</td><td {tdprop}>{}</td><td {tdprop}>{}</td></tr>
     <tr><td {tdprop}>{}</td><td {tdprop}>{}</td><td {tdprop}>{}</td></tr>
-    </TABLE>
-    """.format(*[_cell_img(v, width=imgsize) for v in state.board],
-               tdprop=f'style="border: {bordersize} {bordercolor} {bordertype};" bgcolor={boardcolor}')
+    </table>
+    """.format(
+        *[_cell_img(v, width=cellsize, height=cellsize) for v in state.board],
+        tdprop=f'style="border: {bordersize} {bordercolor} {bordertype}; text-align: center; vertical-align: middle; aspect-ratio: 1" bgcolor={boardcolor} width="{cellsize}" height="{cellsize}" align="center" valign="middle"'
+    )
     
     def _captured(values):
         args = []
@@ -399,7 +407,7 @@ def _state_html(state: State, imagename: str=None, imagedir: str=None,
         """.format(*args, color=captured_color)
         return out
     mover = f"<span>Next mover: {state.turn}</span>"
-    return _captured(state.captured(2)) + board + _captured(state.captured(1)) + mover
+    return [_captured(state.captured(2)), board, _captured(state.captured(1)), mover]
 
 def _state_image(state: State, padding=10, threshold=0.99, **kwargs):
     # we take screenshot of the HTML
@@ -408,7 +416,7 @@ def _state_image(state: State, padding=10, threshold=0.99, **kwargs):
     from htmlwebshot import WebShot
     from PIL import Image
     import numpy as np
-    html = _state_html(state, **kwargs)    
+    html = "\n".join(_state_html(state, **kwargs))
     shot = WebShot()
     with TemporaryDirectory() as dirname:
         imgfile = os.path.join(dirname, "tmp.png")

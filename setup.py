@@ -15,9 +15,9 @@ setup(
     packages=find_packages(),
     install_requires=[],
     test_require=[],
-    package_data={},
+    package_data={"doubutsushogi": ["pieces/*/*.png"]},
     entry_points={},
-    
+
     classifiers=[
         # How mature is this project? Common values are
         #   3 - Alpha
