@@ -103,7 +103,14 @@ def _study_tab():
     next_states = [state.action_result(a) for a in actions]
     next_states_text = [s.text for s in next_states]
     next_values = evaluate_states([s for s in next_states])
-    paths = ["-".join(str(a) for a in optimal_path(s, depth=6, randomize=True)) for s in next_states]
+    def _optimal_path_text(state, depth=6, randomize=True):
+        p = optimal_path(state, depth=depth+1, randomize=randomize)
+        out = "-".join(str(a) for a in p[:depth])
+        if len(p) > depth:
+            out += "..."
+        return out
+    paths = [_optimal_path_text(s, depth=8) for s in next_states]
+    print(paths)
     df = pd.DataFrame({
         "action": [str(a) for a in actions],
         "state": next_states_text,
