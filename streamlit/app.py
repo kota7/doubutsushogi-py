@@ -1,6 +1,19 @@
 # -*- coding: utf-8 -*-
 
 from logging import getLogger, basicConfig
+logger = getLogger(__name__)
+basicConfig(level=20)
+
+def _parent_directory_to_path():
+    import sys
+    import os
+    # add previous folder to the package path
+    # so that it recognize ./doubutsushogi as the package
+    p = os.path.abspath(os.path.join(os.path.dirname(__file__), "../"))
+    logger.info("Adding '%s' to the package path", p)
+    sys.path.insert(0, p)
+_parent_directory_to_path()
+
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -8,8 +21,6 @@ import streamlit.components.v1 as components
 from doubutsushogi import initial_state, State, evaluate_states, optimal_path
 from doubutsushogi.evaluate import remaining_steps
 
-logger = getLogger(__name__)
-basicConfig(level=20)
 
 def _study_tab():
     def _initialize_session_states():
