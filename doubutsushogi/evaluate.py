@@ -7,6 +7,7 @@ import hashlib
 import sqlite3
 import sys
 import random
+import math
 from urllib.request import urlopen
 from logging import getLogger
 from tempfile import TemporaryDirectory
@@ -18,7 +19,8 @@ DB_MD5_URL = "https://github.com/kota7/doubutsushogi-solve/releases/download/v1/
 DBFILE_ENVNAME = "DOUBUTSUSHOGI_DBFILE"
 DB_SIZE = 1737416
 DB_BZ2_SIZE = 552328
-MAXVALUE = 10000
+MAXVALUE = 10000  # value for the immediate win
+GAMMA = 0.99      # discount factor
 
 def _get_md5(filepath, blocksize=2**20):
     # compute md5 checksum of a file
@@ -84,7 +86,7 @@ def evaluate_states(states: list, dbfile: str=None)-> list:
     weights = [3 - 2*s.turn for s in states]  # 1 if first player's turn, -1 if second player's turn
     indices = tuple(s.normalized_state_index for s in states)
     _dbfile = _dbfilepath(dbfile)
-    logger.info("Evaluating using the db file at '%s'", _dbfile)
+    logger.debug("Evaluating using the db file at '%s'", _dbfile)
     if not os.path.isfile(_dbfile):
         print(f"DB file '{_dbfile}' is not found, will download", file=sys.stderr)
         _download_db(_dbfile)
@@ -109,30 +111,43 @@ def optimal_path(state, depth: int=6, action_only: bool=True, randomize: bool=Fa
         actions = state.valid_actions
         if len(actions) == 0:
             return out  # edge case where there is no action available
-        next_states = [(a, state.action_result(a)) for a in actions]
+        next_states = [state.action_result(a) for a in actions]
 
-        # # check for the winning move
-        # for a, (_, status) in next_states:
-        #     if status == state.turn:
-        #         # can win in one move, return this action and done
-        # if action_only:
-        #         out.append(a)
-        #         return out
+        # check for the winning move
+        for a, s in zip(actions, next_states):
+            if s.status == state.turn:
+                # can win in one move, add this action and no need to search more
+                if action_only:
+                    out.append(a)
+                else:
+                    out.append((a, s))
+                return out
 
-        action_values = evaluate_states([s for _, (s, _) in next_states])
+        values = evaluate_states(next_states)
         if randomize:
             # add tiny random numbers for the randomness
             random.seed(seed)
-            action_values = [None if v is None else v + 1e-6 * (random.random() - 0.5) for v in action_values]
+            values = [None if v is None else v + 1e-6 * (random.random() - 0.5) for v in values]
+        valute_state_actions = list(zip(values, next_states, actions))
 
         # find the "best" actions and its index
-        action_values_no_none = [v for v in action_values if v is not None]
-        optim = max(action_values_no_none) if state.turn == 1 else min(action_values_no_none)
-        optim_idx = action_values.index(optim)
-        action = actions[optim_idx]
-        state = next_states[optim_idx][1][0]
+        valute_state_actions = [(v, s, a) for v, s, a in valute_state_actions if v is not None]  # filter out None values
+        if len(valute_state_actions) == 0:
+            logger.warning("There is not action whose value can be evaluated for state:\n%s", state)
+            return out
+        v, s, a = max(valute_state_actions) if state.turn == 1 else min(valute_state_actions)
+        # tuple max looks at the first element first, i.e. the value
         if action_only:
-            out.append(action)
+            out.append(a)
         else:
-            out.append((action, state))
+            out.append((a, s))
+        state = s
     return out
+
+def remaining_steps(value):
+    if value == 0:
+        return None
+    tmp = math.log(abs(value) / MAXVALUE) / math.log(GAMMA) + 1
+    steps = round(tmp)
+    logger.debug("Steps %s rounded to --> %s", tmp, steps)
+    return steps

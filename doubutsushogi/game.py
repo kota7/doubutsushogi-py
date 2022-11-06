@@ -48,13 +48,20 @@ class Action:
     def __repr__(self):
         return f"Action({self.piece}, {self.index_from}, {self.index_to})"
 
+    def __eq__(self, another):
+        if not isinstance(another, Action):
+            logger.warning("Cannot compare an action against '%s' of type %s", another, type(another))
+            return None
+        return (self.piece == another.piece and
+                self.index_from == another.index_from and
+                self.index_to == another.index_to)
 
 class State:
     def __init__(self, data):
         assert len(data) == 19  # 12 board + 3*captured + turn
         assert all(isinstance(v, int) for v in data)
         self._data = tuple(data)
-
+ 
     def __str__(self):
         out = " ------- "
         for i in range(4):
@@ -71,6 +78,12 @@ class State:
 
     def __repr__(self):
         return f"State{self._data}"
+
+    def __eq__(self, another):
+        if not isinstance(another, State):
+            logger.warning("Cannot compare a state against '%s' of type %s", another, type(another))
+            return None
+        return all(a==b for a, b in zip(self._data, another._data))
 
     @property
     def board(self):
@@ -167,13 +180,8 @@ class State:
     def initial_state():
         return initial_state()
 
-    def action_result(self, action)-> tuple:
-        # returns a tuple of
-        #   - the new state resulted from the given action
-        #   - status (1: won by first player, 2: won second player, 0: not finish)
-        state = after_state(self, action)
-        value = _game_status(state)
-        return state, value
+    def action_result(self, action):
+        return after_state(self, action)
 
     @property
     def valid_actions(self)-> list:
@@ -192,9 +200,9 @@ class State:
     def winning(self)-> bool:
         # Check if the player can win the game in one step
         for a in self.valid_actions:
-            _, value = self.action_result(a)
-            if value == self.turn:
-                logger.debug("Winning with '%s' from state \n: %s", a, self)
+            s = self.action_result(a)
+            if s.status == self.turn:
+                logger.debug("Winning with '%s' from state:\n%s", a, self)
                 return True
         return False
 
