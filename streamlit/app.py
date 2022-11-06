@@ -20,7 +20,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 from doubutsushogi import initial_state, State, evaluate_states, optimal_path
 from doubutsushogi.evaluate import remaining_steps
-
+from doubutsushogi.ai import _greedy_decision
 
 def _study_tab():
     def _initialize_session_states():
@@ -69,12 +69,17 @@ def _study_tab():
     logger.info("Current state: %s", state.text)
     actions = state.valid_actions
     actions.sort(key=lambda a: (a.piece, str(a)))
+    if len(actions) > 0:
+        greedy = _greedy_decision(state)
+        greedy_idx = actions.index(greedy)
+    else:
+        greedy_idx = 0
     #print(actions)
     #print(type(actions))
 
     state_text = c1.text_input("Go to state:", placeholder="klz.h..H.ZLK0000001",
                                on_change=_update_current_state_from_text, key="stateFromText")
-    action_select = c2.selectbox("Choose Action", actions, key="actionSelected")
+    action_select = c2.selectbox("Choose Action", actions, index=greedy_idx, key="actionSelected")
     c3.write("")
     c3.write("")
     c3.button("GO", on_click=_update_current_state_by_action)
@@ -110,7 +115,6 @@ def _study_tab():
             out += "..."
         return out
     paths = [_optimal_path_text(s, depth=8) for s in next_states]
-    print(paths)
     df = pd.DataFrame({
         "action": [str(a) for a in actions],
         "state": next_states_text,
