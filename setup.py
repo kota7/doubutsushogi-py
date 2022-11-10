@@ -1,18 +1,24 @@
 # -*- coding: utf-8 -*-
 
-from setuptools import setup, find_packages
+import setuptools
+import os
+readmefile = os.path.join(os.path.dirname(__file__), "README.md")
+with open(readmefile) as f:
+    readme = f.read()
 
 
-setup(
+setuptools.setup(
     name='doubutsushogi',
     version='0.0.1',
     description='Doubutsu shogi AI',
+    long_description=readme,
+    long_description_content_type="text/markdown",
     author='Kota Mori', 
     author_email='kmori05@gmail.com',
-    #url='',
+    url='https://github.com/kota7/doubutsushogi-py',
     #download_url='',
 
-    packages=find_packages(),
+    packages=['doubutsushogi'],
     install_requires=[],
     test_require=[],
     package_data={"doubutsushogi": ["pieces/*/*.png"]},
