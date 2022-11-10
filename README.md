@@ -1,6 +1,8 @@
 DOUBUTSUSHOGI
 =============
+[![](https://badge.fury.io/py/doubutsushogi.svg)](https://badge.fury.io/py/doubutsushogi)
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://kota7-doubutsushogi-py-streamlitapp-fyc9on.streamlit.app/)
+
 A [doubutsushogi (animal chess)](https://en.wikipedia.org/wiki/D%C5%8Dbutsu_sh%C5%8Dgi) analyzer.
 
 
