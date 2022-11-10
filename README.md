@@ -1,10 +1,12 @@
 DOUBUTSUSHOGI
 =============
 [![](https://badge.fury.io/py/doubutsushogi.svg)](https://badge.fury.io/py/doubutsushogi)
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://kota7-doubutsushogi-py-streamlitapp-fyc9on.streamlit.app/)
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://kota7-streamlit-doubutsushogi-appstreamlit-app-weir3f.streamlit.app/)
 
 A [doubutsushogi (animal chess)](https://en.wikipedia.org/wiki/D%C5%8Dbutsu_sh%C5%8Dgi) analyzer.
 
+- This project uses the complete state values calculated in [doubutsushogi-solve](https://github.com/kota7/doubutsushogi-solve/releases) project.
+- An interactive analyzer app is deployed on the [Streamlit Cloud](https://github.com/kota7/doubutsushogi-solve/releases).
 
 ## Install
 
@@ -39,21 +41,11 @@ print(s)
 ```python
 from doubutsushogi.evaluate import evaluate_states
 
-# numeric evalutation of the state
-# positive value indicates that the first player is winning, 
-# negative the second player,
-# and zero means a tie.
+# Numeric evalutation of the state
+# The first run takes some time (typically a few minutes) to downloading database from https://github.com/kota7/doubutsushogi-solve/releases
 evaluate_states([s])
 #[-4612]
-```
-
-
-## Launch streamlit app 
-
-An interactive app is deployed on the [Streamlit Cloud]((https://kota7-doubutsushogi-py-streamlitapp-fyc9on.streamlit.app/)).
-To run the app on the computer locally, run the following:
-
-```shell
-pip3 install -U streamlit-doubutsushogi
-python3 -m streamlit run streamlit/app.py
+# Note: positive value indicates that the first player is winning, 
+#       negative the second player,
+#       and zero means a tie.
 ```
