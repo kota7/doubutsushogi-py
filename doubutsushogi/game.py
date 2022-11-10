@@ -188,7 +188,7 @@ class State:
         return valid_actions(self)
 
     @property
-    def status(self)-> 1:
+    def status(self)-> int:
         # Returns:
         #   0: not finished
         #   1: won by first player
