@@ -27,10 +27,13 @@ def main():
         # evaluate function automatically download the dbfile if not exists
         # this occurs only for the first time
         evaluate_states([initial_state()])
-
+    
+    with st.sidebar:
+        piecename = st.selectbox("Piece type", ["emoji1", "emoji2", "emoji3", "hiragana"])
+    
     tab1, tab2 = st.tabs(["Study", "Play"])
     with tab1:
-        study_app()
+        study_app(piecename=piecename)
 
     with tab2:
         play_app()

@@ -49,11 +49,11 @@ def _show_action_table(state):
     }).set_index("action").dropna().sort_values("value", ascending=(state.turn==2))
     st.dataframe(df)
         
-def study_app(prefix="study"):
+def study_app(prefix="study", piecename="emoji1"):
 
     left, right = st.columns([5, 7])
     with left:
-        state, status, action = st_doubutsushogi(cellsize="100px", piece_imgsize="90", prisoner_imgsize="60px")
+        state, status, action = st_doubutsushogi(piecename=piecename, cellsize="100px", piece_imgsize="90", prisoner_imgsize="60px")
         logger.info("Received value from the board UI: %s", (state, status, action))
 
             
