@@ -2,14 +2,19 @@
 
 import setuptools
 import os
+import sys
+
+# get local readme
 readmefile = os.path.join(os.path.dirname(__file__), "README.md")
 with open(readmefile) as f:
     readme = f.read()
-
+# get version number from the package __init__.py file
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "doubutsushogi")))
+from doubutsushogi import __version__ as version
 
 setuptools.setup(
     name='doubutsushogi',
-    version='0.0.3',
+    version=version,
     description='Doubutsu shogi AI',
     long_description=readme,
     long_description_content_type="text/markdown",
