@@ -9,7 +9,7 @@ with open(readmefile) as f:
 
 setuptools.setup(
     name='doubutsushogi',
-    version='0.0.2',
+    version='0.0.3',
     description='Doubutsu shogi AI',
     long_description=readme,
     long_description_content_type="text/markdown",

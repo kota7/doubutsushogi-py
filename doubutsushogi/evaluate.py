@@ -109,7 +109,7 @@ def evaluate_states(states: list, dbfile: str=None)-> list:
         if status == 2:
             return -MAXVALUE
         if state.winning:
-            return MAXVALUE
+            return MAXVALUE * weight
         o = values.get(idx)
         if o is None:
             return None
