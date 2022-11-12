@@ -9,7 +9,7 @@ with open(readmefile) as f:
 
 setuptools.setup(
     name='doubutsushogi',
-    version='0.0.1',
+    version='0.0.2',
     description='Doubutsu shogi AI',
     long_description=readme,
     long_description_content_type="text/markdown",
@@ -19,7 +19,7 @@ setuptools.setup(
     #download_url='',
 
     packages=['doubutsushogi'],
-    install_requires=[],
+    install_requires=["htmlwebshot", "pillow"],
     test_require=[],
     package_data={"doubutsushogi": ["pieces/*/*.png"]},
     entry_points={},

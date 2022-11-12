@@ -99,8 +99,23 @@ def evaluate_states(states: list, dbfile: str=None)-> list:
         c.execute(q, indices)
         values = dict(c.fetchall())  # maps stateIndex -> value
     
-    out = [MAXVALUE if s.winning else values.get(idx) for idx, s in zip(indices, states)]
-    out = [v if v is None else v*w for v, w in zip(out, weights)]
+    def _finalize_value(idx, state, weight):
+        #print("hoge")
+        status = state.status
+        #print(status)
+        #print(weight)
+        if status == 1:
+            return MAXVALUE
+        if status == 2:
+            return -MAXVALUE
+        if state.winning:
+            return MAXVALUE
+        o = values.get(idx)
+        if o is None:
+            return None
+        return o * weight
+
+    out = [_finalize_value(idx, s, w) for idx, s, w in zip(indices, states, weights)]
     return out
 
 def optimal_path(state, depth: int=6, action_only: bool=True, randomize: bool=False, seed: int=None)-> list:
