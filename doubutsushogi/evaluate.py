@@ -20,6 +20,7 @@ DBFILE_ENVNAME = "DOUBUTSUSHOGI_DBFILE"
 DB_SIZE = 1737416
 DB_BZ2_SIZE = 552328
 MAXVALUE = 10000  # value for the immediate win
+UNITVALUE = 1     # unit difference of the value
 GAMMA = 0.99      # discount factor
 
 def _get_md5(filepath, blocksize=2**20):
@@ -105,9 +106,9 @@ def evaluate_states(states: list, dbfile: str=None)-> list:
         #print(status)
         #print(weight)
         if status == 1:
-            return MAXVALUE
+            return MAXVALUE + UNITVALUE
         if status == 2:
-            return -MAXVALUE
+            return -(MAXVALUE + UNITVALUE)
         if state.winning:
             return MAXVALUE * weight
         o = values.get(idx)
