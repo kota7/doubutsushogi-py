@@ -163,6 +163,9 @@ def optimal_path(state, depth: int=6, action_only: bool=True, randomize: bool=Fa
 def remaining_steps(value):
     if value == 0:
         return None
+    if abs(value) > MAXVALUE:
+        # already game over
+        return 0
     tmp = math.log(abs(value) / MAXVALUE) / math.log(GAMMA) + 1
     steps = round(tmp)
     logger.debug("Steps %s rounded to --> %s", tmp, steps)
